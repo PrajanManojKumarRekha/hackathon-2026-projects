@@ -13,18 +13,25 @@ export function useAuth() {
       ?.split("=")[1];
 
     if (token) {
-      const parsed = JSON.parse(token);
-      setUser({
-        id: "1",
-        name: parsed.role === "patient" ? "John Patient" : "Dr. Smith",
-        role: parsed.role,
-      });
+      try {
+        const parsed = JSON.parse(decodeURIComponent(token)) as { role?: Role };
+
+        if (parsed.role === "patient" || parsed.role === "doctor") {
+          setUser({
+            id: "1",
+            name: parsed.role === "patient" ? "John Patient" : "Dr. Smith",
+            role: parsed.role,
+          });
+        }
+      } catch {
+        // Ignore invalid token values and keep user logged out.
+      }
     }
   }, []);
 
   const login = async (role: Role) => {
     const res = await mockApi.login(role);
-    document.cookie = `token=${res.token}`;
+    document.cookie = `token=${encodeURIComponent(res.token)}; path=/`;
     setUser(res.user);
 
     if (role === "patient") {
@@ -35,7 +42,7 @@ export function useAuth() {
   };
 
   const logout = () => {
-    document.cookie = "token=; Max-Age=0";
+    document.cookie = "token=; Max-Age=0; path=/";
     setUser(null);
     window.location.href = "/";
   };
