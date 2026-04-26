@@ -1,22 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { mockApi, Doctor } from "./mock_api";
+import { useMemo } from "react";
+import { mockApi } from "./mock_api";
 
 export function useDoctors(specialty?: string) {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    mockApi.getDoctors().then((data) => {
-      if (specialty) {
-        setDoctors(data.filter((d) => d.specialty === specialty));
-      } else {
-        setDoctors(data);
-      }
-      setLoading(false);
-    });
+  const doctors = useMemo(() => {
+    const data = mockApi.getDoctorsSync();
+    return specialty ? data.filter((d) => d.specialty === specialty) : data;
   }, [specialty]);
 
-  return { doctors, loading };
+  return { doctors, loading: false, error: null as string | null };
 }

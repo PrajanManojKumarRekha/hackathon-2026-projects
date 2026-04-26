@@ -1,20 +1,19 @@
 "use client";
 
-import Button from "@/components/shared/Button";
-import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import Button from "@/components/shared/button";
 
 export default function Home() {
-  const { login } = useAuth();
+  const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-6">
-      <h1 className="text-2xl font-bold">Telehealth App</h1>
-
-      <Button onClick={() => login("patient")}>
-        I am a Patient
-      </Button>
-
-      <Button onClick={() => login("doctor")}>
+    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <h1 className="text-center text-3xl font-bold">Code &amp; Cure Telehealth</h1>
+      <p className="max-w-xl text-center text-gray-600">
+        Choose your role to enter the correct portal experience.
+      </p>
+      <Button onClick={() => router.push("/patient/login")}>I am a Patient</Button>
+      <Button onClick={() => router.push("/doctor/login")} variant="secondary">
         I am a Doctor
       </Button>
     </div>

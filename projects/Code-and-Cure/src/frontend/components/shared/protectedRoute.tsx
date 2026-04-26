@@ -1,7 +1,8 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useSyncExternalStore } from "react";
+import { useAuth } from "@/lib/useAuth";
+import LoadingSpinner from "./loadingSpinner";
 
 export default function ProtectedRoute({
   children,
@@ -10,20 +11,19 @@ export default function ProtectedRoute({
   children: ReactNode;
   role: "patient" | "doctor";
 }) {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
-    if (!user) {
-      window.location.href = "/";
-      return;
-    }
+    if (!mounted || !ready) return;
+    if (!user || user.role !== role) window.location.href = "/";
+  }, [mounted, ready, role, user]);
 
-    if (user.role !== role) {
-      window.location.href = "/";
-    }
-  }, [user, role]);
-
+  if (!mounted || !ready) return <LoadingSpinner label="Checking access..." />;
   if (!user || user.role !== role) return null;
-
   return <>{children}</>;
 }
