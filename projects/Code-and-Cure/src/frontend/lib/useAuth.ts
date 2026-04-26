@@ -10,6 +10,7 @@ type AuthSnapshot = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001/api/v1";
 const TOKEN_KEY = "access_token";
+const SERVER_SNAPSHOT: AuthSnapshot = { user: null, ready: false };
 
 let snapshot: AuthSnapshot = { user: null, ready: false };
 let bootstrapped = false;
@@ -34,7 +35,7 @@ function getClientSnapshot() {
 }
 
 function getServerSnapshot() {
-  return { user: null, ready: false } as AuthSnapshot;
+  return SERVER_SNAPSHOT;
 }
 
 function readToken(): string | null {
